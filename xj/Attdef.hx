@@ -1,5 +1,5 @@
 package xj;
-import xj.AttArray;
+import xj.*;
 class Attdef{
     public var name: String;
     public var value: String;
@@ -7,17 +7,10 @@ class Attdef{
     inline
     public function str(): String {
         if( name == null ) return '';
-        var a = AttArray.attributeSymbol;
-        var n = "'" + a + name + "'";
-        var v = "'" + value + "'";  
+        var a = Settings.attributeSymbol;
+        var q = Settings.quoteSymbol;
+        var n = q + a + name + q;
+        var v = q + value + q;  
         return '$n:$v';
-    }
-    inline
-    public function str2(): String {
-        if( name == null ) return '';
-        var a = AttArray.attributeSymbol;
-        var n = name;
-        var v = value;
-        return '"$a$n":"$v"';
     }
 }
