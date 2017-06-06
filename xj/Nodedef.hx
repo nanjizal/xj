@@ -2,7 +2,6 @@ package xj;
 import xj.AttArray;
 import xj.NodeArr;
 import xj.StrArr;
-
 @:enum
 abstract NodeType( Int ) {
     var content = 0;
@@ -11,7 +10,6 @@ abstract NodeType( Int ) {
     var nodes = 3;
     var empty = 4;
 }
-
 class Nodedef{
     public var attArray: AttArray;
     public var name: String = '';
@@ -22,7 +20,6 @@ class Nodedef{
     private var value1: StrArr;
     private var value2: Nodedef;
     private var value3: NodeArr;
-    
     public function new(){}
     public function setValue( s: String ){
         typ = content;
@@ -33,7 +30,6 @@ class Nodedef{
         value1 = arr;
     }
     private function setNode( n: Nodedef ){
-        trace( 'setting node ' + n.name );
         typ = node;
         n.parent = this;
         value2 = n;
@@ -43,7 +39,6 @@ class Nodedef{
             case empty:
                 setNode( n );
             case node:
-                trace( 'adding node ' + n.name );
                 var ns = new NodeArr();
                 ns[0] = value2;
                 value1 = null;
@@ -52,7 +47,6 @@ class Nodedef{
                 //n.parent = this;
                 value3 = ns;
             case nodes:
-                trace( 'adding node ' + n.name );
                 value3[ value3.length ] = n;
             case content:
                 
@@ -60,13 +54,6 @@ class Nodedef{
                 
         }
     }
-    /*
-    private function setNodes( ns: NodeArr ){
-        typ = nodes;
-        n.parent = this;
-        value3 = ns;
-    }
-    */
     public function nodeType():String {
         return switch( typ ){
             case content:
@@ -81,7 +68,6 @@ class Nodedef{
                 'empty';
         }
     }
-    
     public function setEmpty() {
         clear();
     }
@@ -100,42 +86,27 @@ class Nodedef{
         }
         typ = empty;
     }
-    
     public function str(?space_: String = ''): String {
         var n = name;
+        var e = Settings.lineEndSymbol;
+        var q = Settings.quoteSymbol;
         var inside = switch( typ ){
                 case content:
                     value0;
                 case multipleValue:
-                    value1.str( space_ +'   ' ); 
+                    value1.str( space_ + Settings.indentString ); 
                 case node:
-                    value2.str( space_ +'   ' );
+                    value2.str( space_ + Settings.indentString );
                 case nodes:
-                    value3.str( space_ +'   ' );
+                    value3.str( space_ + Settings.indentString );
                 case empty:
                     'value:empty';
             };
-        //return "'" + name + "':" + "{\n" + attArray.str() + inside + '}\n';
-        var out: String = space_ + "'" + name + "':" + "{\n";
+        var out: String = space_ + q + name + q +':' + '{' + e;
         if( attArray != null ){
             out += attArray.str( space_ +'   ' );
         }
-        out += inside + '}\n';
+        out += inside + '}' + e;
         return out; 
-    }
-    public function str2(?space_: String = ''): String {
-        var inside = switch( typ ){
-                case content:
-                    value0;
-                case multipleValue:
-                    value1.str2();
-                case node:
-                    value2.str2();
-                case nodes:
-                    value3.str2();
-                case empty:
-                    '';
-                }
-        return '"' + name + '":' + "{\n" + attArray  .str2() + inside + '}\n';
     }
 }
