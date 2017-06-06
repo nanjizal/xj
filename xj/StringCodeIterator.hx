@@ -47,11 +47,4 @@ class StringCodeIterator {
         c = StringTools.fastCodeAt( str, pos++ );
         return c;
     }
-    inline function removeLastChar( s: String ){
-        return last.substr( 0, last.length-1 );
-    }
-    inline function removeFirstLast( s: String ){
-        return last.substr( 1, last.length-2 );
-    }
-    
 }
