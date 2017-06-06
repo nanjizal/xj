@@ -1,10 +1,8 @@
 package xj;
-import xj.Attdef;
+import xj.*;
 
 @:forward
 abstract AttArray( Array<Attdef> ) from Array<Attdef> to Array<Attdef> { 
-    public static inline var singleQuote: Bool = true;
-    public static var attributeSymbol: String = '@';
     inline 
     public function new( ?arr: Array<Attdef> = null ){
         if( arr == null ){
@@ -23,9 +21,11 @@ abstract AttArray( Array<Attdef> ) from Array<Attdef> to Array<Attdef> {
         }
         return value;
     }
-    /* inline */
+    inline
     public function str( ?space_: String = '' ): String {
         if( this.length == 0 ) return '';
+        var e = Settings.lineEndSymbol;
+        var commaEnd = ',' + e;
         var out: String = '';
         var count = 0;
         var space: String = space_;
@@ -33,28 +33,55 @@ abstract AttArray( Array<Attdef> ) from Array<Attdef> to Array<Attdef> {
             att.str;
             out += '$space' + att.str();
             if( count < this.length - 1 ) {
-                out += ',\n';
+                out += commaEnd;
             } else {
-                out += '\n';
+                out += e;
             }
             count++;
         }
         return out;
     }
-    /* inline */
-    public function str2( ?space_: String = '' ): String {
-        var out: String = '';
-        var count = 0;
-        var space: String = space_;
-        for( att in this ) {
-            out += '$space' + att.str2();
-            if( count < this.length - 1 ) {
-                out += ',\n';
-            } else {
-                out += '\n';
+    
+    static var temp: Attdef;
+    inline public function createAtt( s: String ){
+        temp = new Attdef();
+        temp.name = s;
+    }
+    inline public function setAttValue( s: String ){
+        temp.value = s;
+        this[this.length] = temp;
+    }
+    public static inline function parse( strIter: StringCodeIterator ): AttArray {
+        var toggle: Bool = true;
+        strIter.resetBuffer();
+        var s: String;
+        var atdefs = new AttArray();
+        while( true ) {
+            switch( strIter.c ) {
+                case '='.code, ' '.code:
+                    s = strIter.toStr();
+                    if( s != '' ){
+                        if( toggle ){
+                            atdefs.createAtt( s );
+                        } else {
+                            s = StringCrop.firstLast( s );
+                            atdefs.setAttValue( s );
+                        }
+                        toggle = !toggle;
+                    } 
+                    strIter.resetBuffer();
+                case '>'.code:
+                    s = strIter.toStr();
+                    s = StringCrop.firstLast( s );
+                    atdefs.setAttValue( s );
+                    strIter.pos--;
+                    break;
+                default:
+                    strIter.addChar();
             }
-            count++;
+            strIter.next();
         }
-        return out;
+        strIter.resetBuffer();
+        return atdefs;
     }
 }
