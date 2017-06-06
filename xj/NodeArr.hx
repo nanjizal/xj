@@ -1,6 +1,5 @@
 package xj;
-import xj.Nodedef;
-
+import xj.*;
 @:forward
 abstract NodeArr( Array<Nodedef> ) from Array<Nodedef> to Array<Nodedef> { 
     inline 
@@ -24,26 +23,14 @@ abstract NodeArr( Array<Nodedef> ) from Array<Nodedef> to Array<Nodedef> {
     inline
     public function str( ?space_: String = '' ): String {
         var out: String = '';
+        var e = Settings.lineEndSymbol;
         for( i in 0...this.length ){
             if( i < this.length - 1 ){
-                out += this[i].str(space_) + ',\n';
+                out += this[i].str(space_) + ',' + e;
             } else {
-                out += this[i].str(space_) + '\n';
+                out += this[i].str(space_) + e;
             }
         }
         return out;
     }
-    inline
-    public function str2( ?space_: String = '' ): String {
-        var out: String = '';
-        for( i in 0...this.length ){
-            if( i < this.length - 1 ){
-                out += this[i].str2() + ',\n';
-            } else {
-                out += this[i].str2() + '\n';
-            }
-        }
-        return out;
-    }
-    
 }
