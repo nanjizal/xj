@@ -5,6 +5,7 @@ import xj.NodeArr;
 import xj.Nodedef;
 import xj.StrArr;
 import xj.StringCodeIterator;
+import xj.Settings;
 
 @:enum
 abstract OutType( Int ) {
@@ -21,10 +22,9 @@ class Parser{
     var end: String = '';
     var outTag: String = '';
     var finalOut: String = '';
-    var indentStr: String = '   ';
     var indent: String = '';
     var indentCount: Int = 0;
-    var indentLen: Int = 3;
+    var indentLen: Int;
     var tags: Array<String>;
     var att: Array<String>;
     var contents: Array<String>;
@@ -38,6 +38,7 @@ class Parser{
     
     public function new(){}
     public function parse( str_: String ){
+        indentLen = Settings.indentString.length;
         att = new Array<String>();
         tags = new Array<String>();
         contents = new Array<String>();
@@ -54,6 +55,8 @@ class Parser{
         var s: String;
         var i: Int = 0;
         var spaces: Int = 0;
+        var q = Settings.quoteSymbol;
+        var e = Settings.lineEndSymbol;
         while( strIter.hasNext() ){
             switch( strIter.c ){
                 case '\n'.code, '\r'.code:
@@ -70,8 +73,7 @@ class Parser{
                                  incIndent();
                                  tempOut = indent + tempOut + '\n' + indent;
                              }
-                             tempOut += "'" + s + "',";
-                             trace( ' tempOut.... ' + s );
+                             tempOut += q + s + q + ',';
                              i = contents.length;
                     }
                     spaces = 0;
@@ -86,16 +88,16 @@ class Parser{
         }
         if( tempCount > 0 ){
             if( tempCount > 1 ){
-                out += '[\n' + removeLastChar( tempOut ) + '\n' + indent + ']' + '\n';
+                out += '[' + e + removeLastChar( tempOut ) + e + indent + ']' + e;
             } else {
-                out +=  removeLastChar( tempOut ) + '\n';
+                out +=  removeLastChar( tempOut ) + e;
             }
             tempCount = 0;
             tempOut = '';
         }
         if( end != '' ) { 
             decIndent();
-            out += '\n' + indent + '}';
+            out += e + indent + '}';
             end = '';
         }
         traceResults();
@@ -124,6 +126,8 @@ class Parser{
     inline function extractTag() {
         strIter.next();
         strIter.resetBuffer();
+        var q = Settings.quoteSymbol;
+        var e = Settings.lineEndSymbol;
         var s: String;
         if( strIter.c == '?'.code || strIter.c == '/'.code ) {
             strIter.next();
@@ -134,7 +138,7 @@ class Parser{
             trace( 'out ' + s + 'incTagLast ' + incTags[incTags.length-1] );
             if( s == incTags[incTags.length-1] ){
                 incTags.pop();
-                end += '\n' + indent + '}';
+                end += e + indent + '}';
             } else {}
             strIter.resetBuffer();
             return;
@@ -160,20 +164,20 @@ class Parser{
                             if( lastOut == tagOut ){
                             } else if( lastOut == contentOut ){
                                 if( tempCount > 1 ){
-                                    out += '[\n' + removeLastChar( tempOut ) + '\n]' + ',\n';
+                                    out += '[' + e + removeLastChar( tempOut ) + e + ']' + ',' + e;
                                 } else {
-                                    out += tempOut + '\n';
+                                    out += tempOut + e;
                                 }
                                 tempCount = 0;
                                 tempOut = '';
                             }
                             if( lastOut == tagOut ) {
                                 incIndent();
-                                out += '{\n';
+                                out += '{'+ e;
                                 incTags[ incTags.length ] = tags[i-1];
                             }
                             lastOut = tagOut;
-                            out += indent + "'" +  s + "':";
+                            out += indent + q +  s + q + ':';
                         } else {}
                         last = s;
                     }
@@ -196,11 +200,11 @@ class Parser{
                         trace( 'tag... ' + s );
                         if( lastOut == tagOut ) {
                             incIndent();
-                            out += '{\n';
+                            out += '{' + e;
                             incTags[ incTags.length ] = tags[i-1];
                         }
                         lastOut = tagOut;
-                        out += indent + "'"  + s + "':\n";
+                        out += indent + q  + s + q + ':' + e;
                     } else {
                     }
                     last = s;
@@ -216,18 +220,20 @@ class Parser{
         strIter.resetBuffer();
     }
     inline function incIndent(){
-        indent = indent + indentStr;
+        indent = indent + Settings.indentString;
     }
     inline function decIndent(){
         indent = indent.substr(0, indent.length - indentLen );
     }
+    
     inline function extractAtt(){
         strIter.resetBuffer();
         var s: String;
         var i = att.length;
-        var atdef: Attdef = new Attdef();
         var atdefs = new AttArray();
         var toggle: Bool = true;
+        var q = Settings.quoteSymbol;
+        var e = Settings.lineEndSymbol;
         while( true ) {
             switch( strIter.c ) {
                 case '='.code, ' '.code:
@@ -235,18 +241,17 @@ class Parser{
                     if( s != '' ){
                         if( toggle ){
                             att[i] = s;
+                            atdefs.createAtt( s );
                             lastOut = attOut;
-                            atdef = new Attdef();
                             s = attSym + s;
-                            atdef.name = s;
-                            out += indent + "'" + s + "':";
+                            out += indent + q + s + q + ':';
                         } else {
                             att[i] = s;
                             lastOut = attOut;
+                            s = removeFirstLast( s );
+                            atdefs.setAttValue( s );
                             s = attSym + s;
-                            atdef.value = removeFirstLast(s);
-                            atdefs.push( atdef );
-                            out += "'" + removeFirstLast( s ) + "'\n";
+                            out += q + s + q + e;
                         }
                         toggle = !toggle;
                         i = att.length;
@@ -256,10 +261,10 @@ class Parser{
                     s = strIter.toStr();
                     att[i] = s;
                     lastOut = attOut;
+                    s = removeFirstLast( s );
+                    atdefs.setAttValue( s );
                     s = attSym + s;
-                    atdef.value = removeFirstLast(s);
-                    atdefs.push( atdef );
-                    out += "'" + removeFirstLast( s ) + "'\n";
+                    out += q + s + q + e;
                     strIter.pos--;
                     break;
                 default:
