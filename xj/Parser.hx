@@ -28,10 +28,6 @@ class Parser{
     var tags: Array<String>;
     var att: Array<String>;
     var contents: Array<String>;
-    // var str : String = '';
-    // var pos: Int;
-    // var c: Int;
-    // var l: Int;
     var last: String;
     var lastOut: OutType = nullOut;
     var tempOut: String;
@@ -49,27 +45,20 @@ class Parser{
         nodedef = new Nodedef();
         curNode = nodedef;
         strIter = new StringCodeIterator( str_ );
-        // str = str_;
-        // pos = 0;
-        // l = str.length;
-        // c = nextChar();
         strIter.next();
-        
         indentCount = 0;
         finalOut = '';
         out = '';
         tempOut = '';
         tempCount = 0;
-        //var b = new StringBuf();
         var s: String;
         var i: Int = 0;
         var spaces: Int = 0;
         while( strIter.hasNext() ){
-        //while( pos < l ){
             switch( strIter.c ){
                 case '\n'.code, '\r'.code:
                 case '<'.code:
-                    s = strIter.toStr(); //b.toString();
+                    s = strIter.toStr();
                     if( s != '' && spaces != s.length ){
                             //curNode.setValue( s );
                             //parentNode();
@@ -86,16 +75,13 @@ class Parser{
                              i = contents.length;
                     }
                     spaces = 0;
-                    // b = new StringBuf();
                     strIter.resetBuffer();
                     extractTag();
                 default:
                     if( strIter.c == ' '.code ) spaces++; // keeps track of spaces added
                     strIter.addChar();
-                    //b.addChar( c );
             }
             strIter.next();
-            //c = nextChar();
             
         }
         if( tempCount > 0 ){
@@ -109,10 +95,12 @@ class Parser{
         }
         if( end != '' ) { 
             decIndent();
-                out += '\n' + indent + '}';
-                end = '';
-                
-            }
+            out += '\n' + indent + '}';
+            end = '';
+        }
+        traceResults();
+    }
+    function traceResults(){
         trace( 'tags ' + tags );
         trace( 'att ' + att );
         trace( 'contents ' + contents );
@@ -122,6 +110,7 @@ class Parser{
         trace( 'nodedef ......');
         trace( nodedef.str() );
         trace( '..............');
+        
     }
     inline function parentNode(){
         if( curNode.parent != null ) curNode = curNode.parent;
@@ -133,49 +122,32 @@ class Parser{
         return s.substr( 1, s.length-2 );
     }
     inline function extractTag() {
-        //c = nextChar();
         strIter.next();
-        //var b = new StringBuf();
         strIter.resetBuffer();
         var s: String;
         if( strIter.c == '?'.code || strIter.c == '/'.code ) {
-            //c = nextChar();
             strIter.next();
             while( strIter.c  != '>'.code ){
-                // b.addChar( c );
-                // c = nextChar();
                 strIter.next();
             }
-            //s = b.toString();
             s = strIter.toStr();
-            //out+='dec ' + s;
             trace( 'out ' + s + 'incTagLast ' + incTags[incTags.length-1] );
             if( s == incTags[incTags.length-1] ){
                 incTags.pop();
                 end += '\n' + indent + '}';
-                
-                //decIndent();
-            } else {
-                
-            }
+            } else {}
             strIter.resetBuffer();
             return;
         }
-        // b = new StringBuf();
         strIter.resetBuffer();
         var i = tags.length;
         var tagStored = false;
         while( true ) {
-            switch( strIter.c ) {//, ' '.code
+            switch( strIter.c ) {
                 case '>'.code:
-                
-                
                     if( !tagStored ){
-                        
-                        s = strIter.toStr();//b.toString();
+                        s = strIter.toStr();
                         if( last != s ) {
-                            trace( 'tag2... ' + s );
-                            
                             if( curNode.name != '' ){
                                 var n2 = new Nodedef();
                                 n2.name = s;
@@ -184,14 +156,8 @@ class Parser{
                             } else {
                                 curNode.name = s;
                             }
-                            
                             tags[i++] = s;
                             if( lastOut == tagOut ){
-                                
-                                //out+= '\n';
-                                //out += '[' + tempOut + ']' + '\n';
-                                //tempOut = '';
-                                
                             } else if( lastOut == contentOut ){
                                 if( tempCount > 1 ){
                                     out += '[\n' + removeLastChar( tempOut ) + '\n]' + ',\n';
@@ -201,8 +167,6 @@ class Parser{
                                 tempCount = 0;
                                 tempOut = '';
                             }
-                            
-                                //
                             if( lastOut == tagOut ) {
                                 incIndent();
                                 out += '{\n';
@@ -210,30 +174,14 @@ class Parser{
                             }
                             lastOut = tagOut;
                             out += indent + "'" +  s + "':";
-                        } else {
-                            //out += "\n";//+indent+"[";
-                        }
+                        } else {}
                         last = s;
                     }
-                    /*
-                    trace('lastOut ' + lastOut );
-            var z = lastOut;
-            finalOut += '$z{\n'+out;
-            out = ''; 
-                    */
-                    
-                    
                     break;
                 case ' '.code:
                     tagStored = true;
-                    s = strIter.toStr(); // b.toString();
-                      
-                    
-                    
-                    
-                    
+                    s = strIter.toStr();
                     if( last != s ) {
-                        
                         if( curNode.name != '' ){
                             var n2 = new Nodedef();
                             n2.name = s;
@@ -253,25 +201,17 @@ class Parser{
                         }
                         lastOut = tagOut;
                         out += indent + "'"  + s + "':\n";
-                        //  finalOut += '{\n'+out;
-                        //  out = '';
                     } else {
-                        //decIndent();
-                        //out += " pie \n";//+indent+"[";
                     }
                     last = s;
-                    //indent = indent + indentStr;
                     var atdefs = extractAtt();
                     curNode.attArray = atdefs;
                     trace( 'atdefs \n' + atdefs.str( indent ) );
                 default:
                     strIter.addChar();
-                    //b.addChar( c );
             }
             tagStored = false;
-            //c = nextChar();
             strIter.next();
-            
         }
         strIter.resetBuffer();
     }
@@ -282,7 +222,6 @@ class Parser{
         indent = indent.substr(0, indent.length - indentLen );
     }
     inline function extractAtt(){
-        //var b = new StringBuf();
         strIter.resetBuffer();
         var s: String;
         var i = att.length;
@@ -292,19 +231,19 @@ class Parser{
         while( true ) {
             switch( strIter.c ) {
                 case '='.code, ' '.code:
-                    s = strIter.toStr();//b.toString();
-                    //if( s == 'name' ) s = '-name';
+                    s = strIter.toStr();
                     if( s != '' ){
-                        //s = attSym + s;
                         if( toggle ){
                             att[i] = s;
                             lastOut = attOut;
                             atdef = new Attdef();
+                            s = attSym + s;
                             atdef.name = s;
                             out += indent + "'" + s + "':";
                         } else {
                             att[i] = s;
                             lastOut = attOut;
+                            s = attSym + s;
                             atdef.value = removeFirstLast(s);
                             atdefs.push( atdef );
                             out += "'" + removeFirstLast( s ) + "'\n";
@@ -312,11 +251,8 @@ class Parser{
                         toggle = !toggle;
                         i = att.length;
                     } 
-                    //b = new StringBuf();
                     strIter.resetBuffer();
                 case '>'.code:
-                    //s = b.toString();
-                    
                     s = strIter.toStr();
                     att[i] = s;
                     lastOut = attOut;
@@ -327,16 +263,9 @@ class Parser{
                     break;
                 default:
                     strIter.addChar();
-                    //b.addChar( c );
             }
-            
-            //c = nextChar();
             strIter.next();
         }
         return atdefs;
-        
     }
-    /*inline function nextChar() {
-        return StringTools.fastCodeAt( str, pos++ );
-    }*/
 }
