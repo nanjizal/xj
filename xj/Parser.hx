@@ -3,14 +3,14 @@ import xj.*;
 
 @:enum
 abstract OutType( Int ) {
-    var tagOut = 0;
+    var nodeOut = 0;
     var attOut = 1;
     var contentOut = 2;
     var nullOut = 4;
 }
 
 class Parser{
-    var incTags: Array<String>;
+    var incNodes: Array<String>;
     var out: String  = '';
     var end: String = '';
     var outTag: String = '';
@@ -18,7 +18,7 @@ class Parser{
     var indent: String = '';
     var indentCount: Int = 0;
     var indentLen: Int;
-    var tags: Array<String>;
+    var nodes: Array<String>;
     var contents: Array<String>;
     var last: String;
     var lastOut: OutType = nullOut;
@@ -31,9 +31,9 @@ class Parser{
     public function new(){}
     public function parse( str_: String ){
         indentLen = Settings.indentString.length;
-        tags = new Array<String>();
+        nodes = new Array<String>();
         contents = new Array<String>();
-        incTags = new Array<String>();
+        incNodes = new Array<String>();
         nodedef = new Nodedef();
         curNode = nodedef;
         strIter = new StringCodeIterator( str_ );
@@ -94,7 +94,7 @@ class Parser{
         traceResults();
     }
     function traceResults(){
-        trace( 'tags ' + tags );
+        trace( 'nodes ' + nodes );
         trace( 'contents ' + contents );
         finalOut += out + '}';
         trace( 'out ' );
@@ -120,16 +120,16 @@ class Parser{
                 strIter.next();
             }
             s = strIter.toStr();
-            trace( 'out ' + s + 'incTagLast ' + incTags[incTags.length-1] );
-            if( s == incTags[incTags.length-1] ){
-                incTags.pop();
+            trace( 'out ' + s + 'incTagLast ' + incNodes[incNodes.length-1] );
+            if( s == incNodes[incNodes.length-1] ){
+                incNodes.pop();
                 end += e + indent + '}';
             } else {}
             strIter.resetBuffer();
             return;
         }
         strIter.resetBuffer();
-        var i = tags.length;
+        var i = nodes.length;
         var tagStored = false;
         while( true ) {
             switch( strIter.c ) {
@@ -145,8 +145,8 @@ class Parser{
                             } else {
                                 curNode.name = s;
                             }
-                            tags[i++] = s;
-                            if( lastOut == tagOut ){
+                            nodes[i++] = s;
+                            if( lastOut == nodeOut ){
                             } else if( lastOut == contentOut ){
                                 if( tempCount > 1 ){
                                     out += '[' + e + StringCrop.last( tempOut ) + e + ']' + ',' + e;
@@ -156,12 +156,12 @@ class Parser{
                                 tempCount = 0;
                                 tempOut = '';
                             }
-                            if( lastOut == tagOut ) {
+                            if( lastOut == nodeOut ) {
                                 incIndent();
                                 out += '{'+ e;
-                                incTags[ incTags.length ] = tags[i-1];
+                                incNodes[ incNodes.length ] = nodes[i-1];
                             }
-                            lastOut = tagOut;
+                            lastOut = nodeOut;
                             out += indent + q +  s + q + ':';
                         } else {}
                         last = s;
@@ -181,19 +181,20 @@ class Parser{
                         }
                         
                         
-                        tags[i++] = s;
+                        nodes[i++] = s;
                         trace( 'tag... ' + s );
-                        if( lastOut == tagOut ) {
+                        if( lastOut == nodeOut ) {
                             incIndent();
                             out += '{' + e;
-                            incTags[ incTags.length ] = tags[i-1];
+                            incNodes[ incNodes.length ] = nodes[i-1];
                         }
-                        lastOut = tagOut;
+                        lastOut = nodeOut;
                         out += indent + q  + s + q + ':' + e;
                     } else {
                     }
                     last = s;
                     var atdefs = AttArray.parse( strIter );
+                    out += atdefs.str( indent );
                     curNode.attArray = atdefs;
                     trace( 'atdefs \n' + atdefs.str( indent ) );
                 default:
