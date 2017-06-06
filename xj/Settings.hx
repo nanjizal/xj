@@ -6,7 +6,7 @@ class Settings {
     #if doubleQuotes
         inline public static var quoteSymbol: String = '"';
     #else 
-        inline public static var quoteSymbol: String = '"'; 
+        inline public static var quoteSymbol: String = "'"; 
     #end
     
     #if windowLineEnd
