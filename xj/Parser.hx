@@ -235,6 +235,7 @@ class Parser{
                     if( s != '' ){
                         if( toggle ){
                             att[i] = s;
+                            trace( 'toggle true ' + s );
                             lastOut = attOut;
                             atdef = new Attdef();
                             s = attSym + s;
@@ -242,6 +243,7 @@ class Parser{
                             out += indent + "'" + s + "':";
                         } else {
                             att[i] = s;
+                            trace( 'toggle false ' + s );
                             lastOut = attOut;
                             s = attSym + s;
                             atdef.value = removeFirstLast(s);
@@ -255,7 +257,9 @@ class Parser{
                 case '>'.code:
                     s = strIter.toStr();
                     att[i] = s;
+                    trace( 'toggle true2 ' + s );
                     lastOut = attOut;
+                    s = attSym + s;
                     atdef.value = removeFirstLast(s);
                     atdefs.push( atdef );
                     out += "'" + removeFirstLast( s ) + "'\n";
@@ -266,6 +270,7 @@ class Parser{
             }
             strIter.next();
         }
+        strIter.resetBuffer();
         return atdefs;
     }
 }
