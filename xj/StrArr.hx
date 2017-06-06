@@ -1,5 +1,5 @@
 package xj;
-
+import xj.*;
 @:forward
 abstract StrArr( Array<String> ) from Array<String> to Array<String> { 
     inline
@@ -12,26 +12,15 @@ abstract StrArr( Array<String> ) from Array<String> to Array<String> {
     inline
     public function str( ?space_: String = '' ){
         var out = '';
+        var e = Settings.lineEndSymbol;
+        var q = Settings.quoteSymbol;
         for( i in 0...this.length ){
             if( i < this.length - 1 ){
-                out += space_ + "'" + this[i] + "',\n";
+                out += space_ + q + this[i] + q +',' + e;
             } else {
-                out += space_ + "'" +  this[i] + "'\n";
+                out += space_ + q +  this[i] + q + e;
             }
         }
         return out;
     }
-    inline
-    public function str2( ?space_: String = '' ){
-        var out = '';
-        for( i in 0...this.length ){
-            if( i < this.length - 1 ){
-                out += space_ + '"' + this[i] + '",\n';
-            } else {
-                out += space_ + '"' +  this[i] + '"\n';
-            }
-        }
-        return out;
-    }
-    
 }
