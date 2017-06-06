@@ -1,11 +1,5 @@
 package xj;
-import xj.AttArray;
-import xj.Attdef;
-import xj.NodeArr;
-import xj.Nodedef;
-import xj.StrArr;
-import xj.StringCodeIterator;
-import xj.Settings;
+import xj.*;
 
 @:enum
 abstract OutType( Int ) {
@@ -16,7 +10,6 @@ abstract OutType( Int ) {
 }
 
 class Parser{
-    var attSym: String = '@';
     var incTags: Array<String>;
     var out: String  = '';
     var end: String = '';
@@ -26,7 +19,6 @@ class Parser{
     var indentCount: Int = 0;
     var indentLen: Int;
     var tags: Array<String>;
-    var att: Array<String>;
     var contents: Array<String>;
     var last: String;
     var lastOut: OutType = nullOut;
@@ -39,7 +31,6 @@ class Parser{
     public function new(){}
     public function parse( str_: String ){
         indentLen = Settings.indentString.length;
-        att = new Array<String>();
         tags = new Array<String>();
         contents = new Array<String>();
         incTags = new Array<String>();
@@ -88,9 +79,9 @@ class Parser{
         }
         if( tempCount > 0 ){
             if( tempCount > 1 ){
-                out += '[' + e + removeLastChar( tempOut ) + e + indent + ']' + e;
+                out += '[' + e + StringCrop.last( tempOut ) + e + indent + ']' + e;
             } else {
-                out +=  removeLastChar( tempOut ) + e;
+                out +=  StringCrop.last( tempOut ) + e;
             }
             tempCount = 0;
             tempOut = '';
@@ -104,7 +95,6 @@ class Parser{
     }
     function traceResults(){
         trace( 'tags ' + tags );
-        trace( 'att ' + att );
         trace( 'contents ' + contents );
         finalOut += out + '}';
         trace( 'out ' );
@@ -117,12 +107,7 @@ class Parser{
     inline function parentNode(){
         if( curNode.parent != null ) curNode = curNode.parent;
     }
-    inline function removeLastChar( s: String ){
-        return s.substr( 0, s.length-1 );
-    }
-    inline function removeFirstLast( s: String ){
-        return s.substr( 1, s.length-2 );
-    }
+    
     inline function extractTag() {
         strIter.next();
         strIter.resetBuffer();
@@ -164,7 +149,7 @@ class Parser{
                             if( lastOut == tagOut ){
                             } else if( lastOut == contentOut ){
                                 if( tempCount > 1 ){
-                                    out += '[' + e + removeLastChar( tempOut ) + e + ']' + ',' + e;
+                                    out += '[' + e + StringCrop.last( tempOut ) + e + ']' + ',' + e;
                                 } else {
                                     out += tempOut + e;
                                 }
@@ -208,7 +193,7 @@ class Parser{
                     } else {
                     }
                     last = s;
-                    var atdefs = extractAtt();
+                    var atdefs = AttArray.parse( strIter );
                     curNode.attArray = atdefs;
                     trace( 'atdefs \n' + atdefs.str( indent ) );
                 default:
@@ -224,55 +209,5 @@ class Parser{
     }
     inline function decIndent(){
         indent = indent.substr(0, indent.length - indentLen );
-    }
-    
-    inline function extractAtt(){
-        strIter.resetBuffer();
-        var s: String;
-        var i = att.length;
-        var atdefs = new AttArray();
-        var toggle: Bool = true;
-        var q = Settings.quoteSymbol;
-        var e = Settings.lineEndSymbol;
-        while( true ) {
-            switch( strIter.c ) {
-                case '='.code, ' '.code:
-                    s = strIter.toStr();
-                    if( s != '' ){
-                        if( toggle ){
-                            att[i] = s;
-                            atdefs.createAtt( s );
-                            lastOut = attOut;
-                            s = attSym + s;
-                            out += indent + q + s + q + ':';
-                        } else {
-                            att[i] = s;
-                            lastOut = attOut;
-                            s = removeFirstLast( s );
-                            atdefs.setAttValue( s );
-                            s = attSym + s;
-                            out += q + s + q + e;
-                        }
-                        toggle = !toggle;
-                        i = att.length;
-                    } 
-                    strIter.resetBuffer();
-                case '>'.code:
-                    s = strIter.toStr();
-                    att[i] = s;
-                    lastOut = attOut;
-                    s = removeFirstLast( s );
-                    atdefs.setAttValue( s );
-                    s = attSym + s;
-                    out += q + s + q + e;
-                    strIter.pos--;
-                    break;
-                default:
-                    strIter.addChar();
-            }
-            strIter.next();
-        }
-        strIter.resetBuffer();
-        return atdefs;
     }
 }
