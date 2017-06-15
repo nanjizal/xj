@@ -1,0 +1,218 @@
+_____________  _.js:47:3
+testing test0  _.js:48:3
+_____________  _.js:49:3
+xml input >  _.js:51:3
+<?xml version="1.0" encoding="UTF-8"?>  _.js:52:3
+......  _.js:53:3
+finalOut  _.js:55:3
+}  _.js:56:3
+nodes []  _.js:57:3
+contents []  _.js:58:3
+......  _.js:59:3
+nodedef to string  _.js:60:3
+'':{
+}
+  _.js:61:3
+_____________  _.js:47:3
+testing test1  _.js:48:3
+_____________  _.js:49:3
+xml input >  _.js:51:3
+<?xml version="1.0" encoding="UTF-8"?>
+<family>
+    
+</family>    _.js:52:3
+......  _.js:53:3
+finalOut  _.js:55:3
+'family':}  _.js:56:3
+nodes [family]  _.js:57:3
+contents []  _.js:58:3
+......  _.js:59:3
+nodedef to string  _.js:60:3
+'family':{
+}
+  _.js:61:3
+_____________  _.js:47:3
+testing test2  _.js:48:3
+_____________  _.js:49:3
+xml input >  _.js:51:3
+<?xml version="1.0" encoding="UTF-8"?>
+<family>
+    <father>Yasuhisa</father>
+</family>  _.js:52:3
+......  _.js:53:3
+finalOut  _.js:55:3
+'father':'Yasuhisa'
+}  _.js:56:3
+nodes [father]  _.js:57:3
+contents [Yasuhisa]  _.js:58:3
+......  _.js:59:3
+nodedef to string  _.js:60:3
+'father':{
+   '#value':'Yasuhisa'
+   }
+  _.js:61:3
+_____________  _.js:47:3
+testing test3  _.js:48:3
+_____________  _.js:49:3
+xml input >  _.js:51:3
+<?xml version="1.0" encoding="UTF-8"?>
+<family>
+    <father name = "Kawasaki" test = "bill" test2="fred">Yasuhisa</father>
+</family>  _.js:52:3
+......  _.js:53:3
+finalOut  _.js:55:3
+'family':{
+   'father':
+   
+   '@name':'Kawasaki',
+   '@test':'bill',
+   '@test2':'fred',
+      '#value':'Yasuhisa'
+}  _.js:56:3
+nodes [family,father,]  _.js:57:3
+contents [Yasuhisa]  _.js:58:3
+......  _.js:59:3
+nodedef to string  _.js:60:3
+'family':{
+   'father':{
+      '@name':'Kawasaki',
+      '@test':'bill',
+      '@test2':'fred',
+      '#value':'Yasuhisa'
+   }
+
+   }
+  _.js:61:3
+_____________  _.js:47:3
+testing test4  _.js:48:3
+_____________  _.js:49:3
+xml input >  _.js:51:3
+<?xml version="1.0" encoding="UTF-8"?>
+<family>
+    <boy>Yusuke</boy>
+    <boy>Kairi fred</boy>
+</family>   _.js:52:3
+......  _.js:53:3
+finalOut  _.js:55:3
+'family':{
+   'boy':[
+      'Yusuke',
+      'Kairi fred'
+      ]
+}  _.js:56:3
+nodes [family,boy]  _.js:57:3
+contents [Yusuke,Kairi fred]  _.js:58:3
+......  _.js:59:3
+nodedef to string  _.js:60:3
+'family':{
+   'boy':[
+      'Yusuke',
+      'Kairi fred'
+
+   ]
+
+   }
+  _.js:61:3
+_____________  _.js:47:3
+testing test5  _.js:48:3
+_____________  _.js:49:3
+xml input >  _.js:51:3
+<?xml version="1.0" encoding="UTF-8"?>
+<family>
+    <girl>Shiori</girl>
+    <boy>Yusuke</boy>
+    <baby>treacle</baby>
+</family>   _.js:52:3
+......  _.js:53:3
+finalOut  _.js:55:3
+'family':{
+   'girl':'Shiori',
+   'boy':'Yusuke',
+   'baby':'treacle'
+}  _.js:56:3
+nodes [family,girl,boy,baby]  _.js:57:3
+contents [Shiori,Yusuke,treacle]  _.js:58:3
+......  _.js:59:3
+nodedef to string  _.js:60:3
+'family':{
+   'girl':{
+      '#value':'Shiori'
+   }
+,
+   'boy':{
+      '#value':'Yusuke'
+   }
+,
+   'baby':{
+      '#value':'treacle'
+   }
+
+
+   }
+  _.js:61:3
+_____________  _.js:47:3
+testing test8  _.js:48:3
+_____________  _.js:49:3
+xml input >  _.js:51:3
+<?xml version="1.0" encoding="UTF-8"?>
+<family>
+    <father name = "Kawasaki" test = "bill" test2="fred">Yasuhisa</father>
+    <mother>Chizuko</mother>
+    <children>
+        <girl>Shiori</girl>
+        <boy>Yusuke</boy>
+        <boy>Kairi fred</boy>
+    </children> 
+</family>    _.js:52:3
+......  _.js:53:3
+finalOut  _.js:55:3
+'family':{
+   'father':
+   
+   '@name':'Kawasaki',
+   '@test':'bill',
+   '@test2':'fred',
+      '#value':'Yasuhisa',
+      'mother':'Chizuko',
+      'children':{
+         'girl':'Shiori',
+         'boy':[
+            'Yusuke',
+            'Kairi fred'
+            ]
+}  _.js:56:3
+nodes [family,father,,mother,children,girl,boy]  _.js:57:3
+contents [Yasuhisa,Chizuko,Shiori,Yusuke,Kairi fred]  _.js:58:3
+......  _.js:59:3
+nodedef to string  _.js:60:3
+'family':{
+   'father':{
+      '@name':'Kawasaki',
+      '@test':'bill',
+      '@test2':'fred',
+      '#value':'Yasuhisa'
+   }
+,
+   'mother':{
+      '#value':'Chizuko'
+   }
+,
+   'children':{
+      'girl':{
+         '#value':'Shiori'
+   }
+,
+      'boy':[
+         'Yusuke',
+         'Kairi fred'
+
+   ]
+
+
+   }
+
+
+   }
+  _.js:61:3
+
+        
