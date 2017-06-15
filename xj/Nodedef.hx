@@ -26,20 +26,6 @@ class Nodedef{
         typ = content;
         value0 = s;
     }
-    /*inline public function getNodeType(): String{
-        return switch( typ ){
-            case content:
-                'content';
-            case multipleValue:
-                'mulitpleValue';
-            case node:
-                'node';
-            case nodes:
-                 'nodes';
-            case empty:
-                 'empty';
-        }
-    }*/
     public function hasAt(){
         return !(attArray == null || attArray == []);
     }
