@@ -107,23 +107,9 @@ class Parser{
             end = '';
         }
     }
-    function traceResults(){
-        trace( 'nodes ' + nodes );
-        trace( 'contents ' + contents );
-        finalOut += out + '}';
-        trace( 'out ' );
-        trace( finalOut );
-        trace( 'nodedef ......');
-        trace( nodedef );
-        trace( nodedef.str() );
-        trace( '..............');
-        
-    }
     inline function addContent( s: String ){
         var q = Settings.quoteSymbol;
         if( s != '' ){
-             //curNode.setValue( s );//
-             //parentNode();
              contents[ contents.length ] = s;
              lastOut = contentType;
              tempCount++;
@@ -171,7 +157,6 @@ class Parser{
                         if( last != s ) {
                             if( lastOut == nodeType ){
                                 incIndent();
-                                //out += '{'+ e;
                                 if( !curNode.hasAt() ){
                                     out += '{'+ e;
                                 }
