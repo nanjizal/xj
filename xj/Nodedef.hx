@@ -20,10 +20,28 @@ class Nodedef{
     private var value1: StrArr;
     private var value2: Nodedef;
     private var value3: NodeArr;
+    
     public function new(){}
     public function setValue( s: String ){
         typ = content;
         value0 = s;
+    }
+    /*inline public function getNodeType(): String{
+        return switch( typ ){
+            case content:
+                'content';
+            case multipleValue:
+                'mulitpleValue';
+            case node:
+                'node';
+            case nodes:
+                 'nodes';
+            case empty:
+                 'empty';
+        }
+    }*/
+    public function hasAt(){
+        return !(attArray == null || attArray == []);
     }
     public function setMultipleValue( arr: Array<String> ) {
         typ = multipleValue;
@@ -44,7 +62,7 @@ class Nodedef{
                 value1 = null;
                 ns[1] = n;
                 typ = nodes;
-                //n.parent = this;
+                n.parent = this;
                 value3 = ns;
             case nodes:
                 value3[ value3.length ] = n;
@@ -86,27 +104,45 @@ class Nodedef{
         }
         typ = empty;
     }
+    
     public function str(?space_: String = ''): String {
         var n = name;
+        var isEmpty = typ != empty;
         var e = Settings.lineEndSymbol;
         var q = Settings.quoteSymbol;
+        var indent = Settings.indentString;
+        var indentSum = space_ + indent;
+        var hasAt = attArray != null;
         var inside = switch( typ ){
                 case content:
-                    value0;
+                    indentSum + q + '#value' + q + ":" + q + value0 + q;
                 case multipleValue:
-                    value1.str( space_ + Settings.indentString ); 
+                    value1.str( indentSum ); 
                 case node:
-                    value2.str( space_ + Settings.indentString );
+                    value2.str( indentSum );
                 case nodes:
-                    value3.str( space_ + Settings.indentString );
+                    value3.str( indentSum );
                 case empty:
-                    'value:empty';
+                    '';
             };
-        var out: String = space_ + q + name + q +':' + '{' + e;
-        if( attArray != null ){
-            out += attArray.str( space_ +'   ' );
+        var bo: String;
+        var bc: String;
+        if( typ != multipleValue ) {
+            bo = '{';
+            bc = '}';
+        } else {
+            bo = '[';
+            bc = ']';
         }
-        out += inside + '}' + e;
+        var out: String = space_ + q + name + q +':' + bo + e;
+        if( hasAt ){
+            out += attArray.str( indentSum, isEmpty );
+        }
+        if( isEmpty ){
+            out += inside + e + indent + bc + e;
+        } else {
+            out += space_ + bc + e;
+        }
         return out; 
     }
 }

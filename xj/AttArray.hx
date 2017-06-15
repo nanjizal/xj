@@ -1,6 +1,6 @@
 package xj;
 import xj.*;
-
+using xj.StringCrop;
 @:forward
 abstract AttArray( Array<Attdef> ) from Array<Attdef> to Array<Attdef> { 
     inline 
@@ -22,22 +22,30 @@ abstract AttArray( Array<Attdef> ) from Array<Attdef> to Array<Attdef> {
         return value;
     }
     inline
-    public function str( ?space_: String = '' ): String {
+    public function str( ?space_: String = '', ?lastComma: Bool = true ): String {
         if( this.length == 0 ) return '';
         var e = Settings.lineEndSymbol;
         var commaEnd = ',' + e;
         var out: String = '';
         var count = 0;
         var space: String = space_;
-        for( att in this ) {
-            att.str;
-            out += '$space' + att.str();
-            if( count < this.length - 1 ) {
-                out += commaEnd;
-            } else {
-                out += e;
+        if( lastComma ){
+            for( att in this ) {
+                att.str;
+                out += '$space' + att.str() + commaEnd;
+                count++;
             }
-            count++;
+        } else {
+            for( att in this ) {
+                att.str;
+                out += '$space' + att.str();
+                if( count < this.length - 1 ) {
+                    out += commaEnd;
+                } else {
+                    out += e;
+                }
+                count++;
+            }
         }
         return out;
     }
